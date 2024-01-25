@@ -35,4 +35,4 @@
         daemon_reload: true
         name: openvpn
         enabled: yes
-        state: started
+        state: restarted

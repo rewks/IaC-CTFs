@@ -3,6 +3,7 @@ Description=OpenVPN Connection
 After=network.target
 
 [Service]
+Type=notify
 ExecStart=/usr/sbin/openvpn --config /etc/openvpn/client/ctf.ovpn
 Restart=always
 RestartSec=5

@@ -25,4 +25,5 @@ ansible-playbook -i ./ansible/hosts ./ansible/havoc.yaml --private-key ./.ssh/id
 Bindings:
 - 0.0.0.0:39862 - this is the port the Havoc server runs on and Havoc clients will connect to.
 - ?.?.?.?:443 - an HTTPS listener will be created on this port. The bind address will be taken from the tun0 interface if it is available, otherwise it will bind on 0.0.0.0.
-- ?.?.?.?:445 - an SMB listener will be created on this port. The bind address will be taken from the tun0 interface if it is available, otherwise it will bind on 0.0.0.0.
+
+**Note**: This builds the server, but it does not build the Havoc client. You will need to do that locally to ensure it is compiled using the right version of GLIBC for your PC.
