@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 Restart=always
-RestartSec=1
+RestartSec=5
 User=root
 WorkingDirectory=/opt/Havoc
 ExecStartPre=/opt/Havoc/updateprofile.sh

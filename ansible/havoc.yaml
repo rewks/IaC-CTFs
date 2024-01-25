@@ -3,11 +3,11 @@
   remote_user: "user"
   vars_prompt:
     - name: c2user
-      prompt: Havoc C2 username?
+      prompt: Havoc C2 username
       private: false
 
     - name: c2pass
-      prompt: Havoc C2 password?
+      prompt: Havoc C2 password
   
   tasks:
     - name: Install required packages
@@ -75,14 +75,14 @@
     - name: Upload Havoc service file
       become: yes
       ansible.builtin.copy:
-        src: ./data/havoc/havocserver.service
-        dest: /etc/systemd/system/havocserver.service
+        src: ./data/havoc/havoc.service
+        dest: /etc/systemd/system/havoc.service
         mode: '0644'
 
     - name: Activate Havoc service
       become: yes
       ansible.builtin.systemd_service:
         daemon_reload: true
-        name: havocserver
+        name: havoc
         enabled: yes
         state: started

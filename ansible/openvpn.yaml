@@ -1,0 +1,38 @@
+- name: Configure VPN connection
+  hosts: all
+  remote_user: "user"
+  vars_prompt:
+    - name: vpnfile
+      prompt: Path to VPN configuration file
+      private: false
+
+  tasks:
+    - name: Install required packages
+      become: yes
+      package:
+        update_cache: yes
+        name:
+          - openvpn
+        state: latest
+
+    - name: Upload VPN configuration file
+      become: yes
+      ansible.builtin.copy:
+        src: "{{ vpnfile }}"
+        dest: /etc/openvpn/client/ctf.ovpn
+        mode: '0664'
+
+    - name: Upload VPN service file
+      become: yes
+      ansible.builtin.copy:
+        src: ./data/openvpn/openvpn.service
+        dest: /etc/systemd/system/openvpn.service
+        mode: '0644'
+
+    - name: Activate openvpn service
+      become: yes
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+        name: openvpn
+        enabled: yes
+        state: started
