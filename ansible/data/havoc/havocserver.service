@@ -1,5 +1,6 @@
 [Unit]
 Description=Havoc C2 Team Server
+Wants=openvpn.service
 After=network.target
 StartLimitIntervalSec=0
 
@@ -10,7 +11,7 @@ RestartSec=1
 User=root
 WorkingDirectory=/opt/Havoc
 ExecStartPre=/opt/Havoc/updateprofile.sh
-ExecStart=/opt/Havoc/havoc server --profile ./profiles/ctf-profile.yaotl -v --debug &
+ExecStart=/opt/Havoc/havoc server --profile ./profiles/ctf-profile.yaotl -v --debug
 
 [Install]
 WantedBy=multi-user.target
