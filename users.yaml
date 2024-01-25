@@ -1,7 +1,7 @@
 #cloud-config
 # Add user to the system and populate authorized_keys
 users:
-  - name: ${ctf-user}
+  - name: user
     shell: /bin/bash
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh_authorized_keys:

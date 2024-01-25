@@ -1,0 +1,88 @@
+- name: Configure Havoc C2
+  hosts: all
+  remote_user: "user"
+  vars_prompt:
+    - name: c2user
+      prompt: Havoc C2 username?
+      private: false
+
+    - name: c2pass
+      prompt: Havoc C2 password?
+  
+  tasks:
+    - name: Install required packages
+      become: yes
+      package:
+        update_cache: yes
+        name:
+          - golang
+          - python3-dev
+          - python3-venv
+          - make
+          - cmake
+          - qtbase5-dev
+          - qtdeclarative5-dev
+          - libqt5websockets5-dev
+        state: latest
+
+    - name: Set /opt permissions
+      become: yes
+      ansible.builtin.file:
+        path: /opt
+        owner: root
+        group: user
+        mode: '0774'
+    
+    - name: Clone Havoc repository
+      ansible.builtin.git:
+        repo: 'https://github.com/HavocFramework/Havoc'
+        dest: /opt/Havoc
+
+    - name: Installing Havoc server dependencies
+      ansible.builtin.shell:
+        chdir: /opt/Havoc/teamserver
+        cmd: go mod download golang.org/x/sys; go mod download github.com/ugorji/go
+
+    - name: Building Havoc server (this can take a while..)
+      ansible.builtin.shell:
+        chdir: /opt/Havoc
+        cmd: make ts-build
+
+    - name: Upload Havoc server profile
+      ansible.builtin.copy:
+        src: ./data/havoc/ctf-profile.yaotl
+        dest: /opt/Havoc/profiles/ctf-profile.yaotl.bk
+        owner: user
+        group: user
+        mode: '0664'
+
+    - name: Insert operator username into Havoc profile
+      ansible.builtin.shell:
+        cmd: sed -i "s/xXuserXx/{{ c2user }}/g" /opt/Havoc/profiles/ctf-profile.yaotl.bk
+
+    - name: Insert operator password into Havoc profile
+      ansible.builtin.shell:
+        cmd: sed -i "s/xXpassXx/{{ c2pass }}/g" /opt/Havoc/profiles/ctf-profile.yaotl.bk
+
+    - name: Upload Havoc server profile update script
+      ansible.builtin.copy:
+        src: ./data/havoc/updateprofile.sh
+        dest: /opt/Havoc/updateprofile.sh
+        owner: user
+        group: user
+        mode: '0775'
+    
+    - name: Upload Havoc service file
+      become: yes
+      ansible.builtin.copy:
+        src: ./data/havoc/havocserver.service
+        dest: /etc/systemd/system/havocserver.service
+        mode: '0644'
+
+    - name: Activate Havoc service
+      become: yes
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+        name: havocserver
+        enabled: yes
+        state: started

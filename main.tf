@@ -78,5 +78,11 @@ resource "aws_instance" "ctf-ec2" {
     vpc_security_group_ids = [aws_security_group.ctf-ec2-secgrp.id]
     key_name = aws_key_pair.ctf-pub-key.key_name
     associate_public_ip_address = true
-    user_data = templatefile("${path.module}/users.yaml", { ctf-user = var.ctf_username, ctf-root-key = aws_key_pair.ctf-pub-key.public_key })
+    user_data = templatefile("${path.module}/users.yaml", { ctf-root-key = aws_key_pair.ctf-pub-key.public_key })
+}
+
+resource "local_file" "ansible-inventory" {
+    filename = "./ansible/hosts"
+    file_permission = "0664"
+    content = "${aws_instance.ctf-ec2.public_ip}"
 }

@@ -1,9 +1,3 @@
-variable "ctf_username" {
-    description = "Username of account created on EC2"
-    type = string
-    default = "operator"
-}
-
 variable "aws_region" {
     description = "The region within AWS that resources are to be deployed to"
     type = string

@@ -1,0 +1,16 @@
+[Unit]
+Description=Havoc C2 Team Server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+WorkingDirectory=/opt/Havoc
+ExecStartPre=/opt/Havoc/updateprofile.sh
+ExecStart=/opt/Havoc/havoc server --profile ./profiles/ctf-profile.yaotl -v --debug &
+
+[Install]
+WantedBy=multi-user.target
