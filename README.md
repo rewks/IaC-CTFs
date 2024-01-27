@@ -6,6 +6,14 @@ This repository contains Terraform and Ansible scripts to quickly spin up an EC2
 
 Clone this repository and create a new file called **terraform.tfvars**. Define variable values related to your AWS account inside (see **variables.tf** for guidance). The way I have decided to set it up, you will need to input the id of an existing VPC and subnet. Also pay particular attention to the _whitelisted\_ips_ variable; whether you want the EC2 to accept connections from the internet or just from a specific IP will depend on what you're doing.
 
+An example **terraform.tfvars** is show below:
+
+```
+vpc_id = "vpc-09815bd76c9dc62d8"
+subnet_id = "subnet-0e807a6g39d3e3a22"
+whitelisted_ips = "117.183.253.254/32"
+```
+
 On the first run you will need to download the terraform providers with `terraform init`  
 To create the EC2 instance run `terraform apply`  
 To destroy the EC2 instance run `terraform destroy`
