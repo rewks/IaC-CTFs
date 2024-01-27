@@ -1,0 +1,97 @@
+- name: Set up BloodHound CE
+  hosts: all
+  remote_user: "user"
+  vars_prompt:
+    - name: bhuser
+      prompt: BloodHound admin username
+      private: false
+
+    - name: bhpass
+      prompt: BloodHound admin password
+  
+  tasks:
+    - name: Install required packages
+      become: yes
+      package:
+        update_cache: yes
+        name:
+          - ca-certificates
+          - curl
+        state: latest
+
+    - name: Add Docker's official GPG key
+      become: yes
+      ansible.builtin.shell:
+        cmd: install -m 0755 -d /etc/apt/keyrings; curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc; chmod a+r /etc/apt/keyrings/docker.asc
+
+    - name: Add Docker's repository to Apt sources
+      become: yes
+      ansible.builtin.shell:
+        cmd: echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      
+    - name: Install Docker
+      become: yes
+      package:
+        update_cache: yes
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+
+    - name: Create BloodHound /opt directory
+      become: yes
+      ansible.builtin.file:
+        path: /opt/BloodHoundCE
+        state: directory
+        owner: root
+        group: user
+        mode: '0774'
+    
+    - name: Upload BloodHound compose file
+      ansible.builtin.copy:
+        src: ./data/bloodhound/docker-compose.yml
+        dest: /opt/BloodHoundCE/docker-compose.yml
+        owner: user
+        group: user
+        mode: '0664'
+
+    - name: Upload BloodHound config file
+      ansible.builtin.copy:
+        src: ./data/bloodhound/bloodhound.config.json
+        dest: /opt/BloodHoundCE/bloodhound.config.json
+        owner: user
+        group: user
+        mode: '0664'
+
+    - name: Upload BloodHound env file
+      ansible.builtin.copy:
+        src: ./data/bloodhound/.env
+        dest: /opt/BloodHoundCE/.env
+        owner: user
+        group: user
+        mode: '0664'
+
+    - name: Insert admin username into .env
+      ansible.builtin.shell:
+        cmd: sed -i "s/#BH_USER=/BH_USER={{ bhuser }}/g" /opt/BloodHoundCE/.env
+
+    - name: Insert admin password into .env
+      ansible.builtin.shell:
+        cmd: sed -i "s/#BH_PASSWORD=/BH_PASSWORD={{ bhpass }}/g" /opt/BloodHoundCE/.env
+
+    - name: Upload BloodHound service file
+      become: yes
+      ansible.builtin.copy:
+        src: ./data/bloodhound/bloodhound.service
+        dest: /etc/systemd/system/bloodhound.service
+        mode: '0644'
+
+    - name: Activate BloodHound service
+      become: yes
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+        name: bloodhound
+        enabled: yes
+        state: started

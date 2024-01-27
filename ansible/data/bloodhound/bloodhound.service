@@ -1,0 +1,15 @@
+[Unit]
+Description=BloodHound CE Server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=root
+WorkingDirectory=/opt/BloodHoundCE
+ExecStart=docker compose up
+
+[Install]
+WantedBy=multi-user.target
