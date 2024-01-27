@@ -23,7 +23,7 @@ variable "admin_ips" {
 variable "ec2_size" {
     description = "The size of the EC2 instance to provision"
     type = string
-    default = "t3.medium"   # 2 core, 8gb ram, AMD EPYC 7000 series
+    default = "t3.large"   # 2 core, 8gb ram Intel Xeon
 }
 
 # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html
