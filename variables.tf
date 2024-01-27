@@ -14,8 +14,8 @@ variable "subnet_id" {
     type = string
 }
 
-variable "admin_ips" {
-    description = "CIDR IP range for administrative access"
+variable "whitelisted_ips" {
+    description = "CIDR IP range to whitelist in security group rules e.g. 0.0.0.0/0 or 178.1.23.99/32"
     type = string
 }
 

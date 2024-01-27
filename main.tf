@@ -64,7 +64,7 @@ resource "aws_vpc_security_group_ingress_rule" "ctf-ssh-whitelist" {
     security_group_id = aws_security_group.ctf-ec2-secgrp.id
     description = "Allow all inbound traffic"
 
-    cidr_ipv4   = "0.0.0.0/0"
+    cidr_ipv4   = var.whitelisted_ips
     ip_protocol = "-1"
 }
 
